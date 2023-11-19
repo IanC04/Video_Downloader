@@ -57,17 +57,20 @@ def confirmSuccess(yt, output):
     print(f"{yt.title} has been successfully downloaded to {output}.")
 
 
-def handler(signum, frame):
-    print("Download cancelled.")
-
-
-signal.signal(signal.SIGINT, handler)
-
 def showTips():
-    print("YouTube Downloader-Ian Chen, 11/18/2023")
+    print("\nYouTube Downloader-Ian Chen, 11/18/2023")
     print("Press Ctrl+C to cancel download.")
     print("--------------------------------------------------")
     print()
+
+
+def handler(signum, frame):
+    # handle Ctrl+C
+    print(f"Download cancelled by user, aka you.")
+    exit(signum)
+
+
+signal.signal(signal.SIGINT, handler)
 
 if __name__ == "__main__":
     showTips()
