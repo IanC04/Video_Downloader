@@ -4,6 +4,7 @@ try:
     import signal
 except ModuleNotFoundError:
     print("Please install pytube, signal, and os modules.")
+    exit()
 
 
 def getURL() -> str:
