@@ -1,81 +1,93 @@
 try:
+    import tkinter as tk
+    from tkinter import filedialog
     from pytube import YouTube
+    from pytube.cli import on_progress
     import os
     import signal
 except ModuleNotFoundError:
-    print("Please install pytube, signal, and os modules.")
+    print("Please install tkinter, pytube, signal, and os modules.")
     exit()
 
 
-def getURL() -> str:
-    # url input from user
-    link = input("Enter the URL of the video you want to download: \n>> ")
-    print(f"Correct URL? {link}")
-    if input("Y/N: ").lower() == "y":
-        return link
-    return getURL()
+class Downloader:
+    """
+    A class that downloads YouTube videos.
+    """
+    DEFAULT_SAVE_LOCATION = f"{os.getcwd()}/Downloads"
 
+    def __init__(self):
+        self._url = None
+        self._yt = None
+        self._video = None
+        self._save_directory = None
+        self._output_file = None
 
-def extractVideo(link: str):
-    # extract not only audio
-    try:
-        yt = YouTube(link)
-    except:
-        print("Video is unavailable or link is invalid.\nTry Again.")
-        link = getURL()
-        return extractVideo(link)
-    videos = yt.streams.filter(file_extension='mp4', progressive=True)
-    return videos
+    def start(self) -> None:
+        self.show_tips()
+        self.get_url()
+        self.extract_video()
+        self.get_save_directory()
+        self.start_download()
+        self.confirm_success()
 
-
-def getSaveDirectory():
-    # check for destination to save file
-    print("Enter the destination (leave blank for current directory)")
-    destination = input(">> ")
-    if destination == "":
-        destination = os.getcwd()
-    if os.path.isdir(destination):
-        print(f"Confirm destination: {destination}")
-        if input("Y/N: ").lower() == "y":
-            return destination
+    def get_url(self) -> None:
+        link = input("Enter the URL of the video you want to download: \n>> ")
+        print(f"Correct URL? {link}")
+        if input("Y/N: ").lower().strip() == "y":
+            self._url = link
         else:
-            return getSaveDirectory()
-    else:
-        print(f"Directory {destination} does not exist.")
-        return getSaveDirectory()
+            self.get_url()
+
+    def extract_video(self) -> None:
+        try:
+            yt = YouTube(self._url)
+            print("Please wait...")
+            self._yt = yt
+            self._video = self._yt.streams.filter(file_extension='mp4').get_highest_resolution()
+        except Exception:
+            print("Video is unavailable or Link is invalid.")
+            print("Try Again.")
+            self.get_url()
+            self.extract_video()
+
+    def get_save_directory(self) -> None:
+        if not os.path.isdir(self.DEFAULT_SAVE_LOCATION):
+            os.mkdir(self.DEFAULT_SAVE_LOCATION)
+        root = tk.Tk()
+        root.withdraw()
+        destination = filedialog.askdirectory()
+        if destination == "":
+            print("No directory selected.")
+            print(f"Using default directory: {self.DEFAULT_SAVE_LOCATION}")
+        elif os.path.isdir(destination):
+            print(f"Confirm destination: {destination}")
+            if input("Y/N: ").lower().strip() == "y":
+                self._save_directory = destination
+            else:
+                self.get_save_directory()
+        else:
+            print(f"Directory {destination} does not exist.")
+            self.get_save_directory()
+
+    def start_download(self) -> None:
+        print("Downloading...")
+        out_file = self._video.download(output_path=self._save_directory)
+        self._output_file = out_file
+
+    def confirm_success(self) -> None:
+        print(f"{self._video.title} has been successfully downloaded to {self._output_file}.\n")
+
+    def show_tips(self) -> None:
+        print("YouTube Downloader-Ian Chen.")
+        print("Last updated 01/08/2024.")
+        print("Press Ctrl+C to cancel download.")
+        print("--------------------------------------------------\n")
 
 
-def startDownload(all_videos, dest):
-    # download the file
-    single_video = all_videos.get_highest_resolution()
-    out_file = single_video.download(output_path=dest)
-    return single_video, out_file
-
-
-def confirmSuccess(yt, output):
-    # result of success
-    print(f"{yt.title} has been successfully downloaded to {output}.")
-
-
-def showTips():
-    print("\nYouTube Downloader-Ian Chen, 11/18/2023")
-    print("Press Ctrl+C to cancel download.")
-    print("--------------------------------------------------")
-    print()
-
-
-def handler(signum, frame):
-    # handle Ctrl+C
-    print(f"Download cancelled by user, aka you.")
-    exit(signum)
-
-
-signal.signal(signal.SIGINT, handler)
-
-if __name__ == "__main__":
-    showTips()
-    url = getURL()
-    all_videos = extractVideo(url)
-    save_directory = getSaveDirectory()
-    video, output_file = startDownload(all_videos, save_directory)
-    confirmSuccess(video, output_file)
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+downloader = Downloader()
+while True:
+    downloader.start()
+    if input("Press y to download another video.").lower().strip() != "y":
+        break
