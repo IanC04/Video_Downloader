@@ -1,13 +1,13 @@
 try:
-    import tkinter as tk
-    from tkinter import filedialog
     from pytube import YouTube
-    from pytube.cli import on_progress
-    import os
-    import signal
 except ModuleNotFoundError:
-    print("Please install tkinter, pytube, signal, and os modules.")
+    # the batch file should have downloaded pytube to the venv using the GitHub's requirements.txt
+    print("pytube is not installed.")
     exit()
+import tkinter as tk
+from tkinter import filedialog
+import os
+import signal
 
 
 class Downloader:
@@ -45,7 +45,7 @@ class Downloader:
             print("Please wait...")
             self._yt = yt
             self._video = self._yt.streams.filter(file_extension='mp4').get_highest_resolution()
-        except Exception:
+        except:
             print("Video is unavailable or Link is invalid.")
             print("Try Again.")
             self.get_url()
