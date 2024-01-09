@@ -4,11 +4,6 @@ cls
 SET python_url=https://raw.githubusercontent.com/IanC04/Video_Downloader/master/YouTube.py
 SET requirements_url=https://raw.githubusercontent.com/IanC04/Video_Downloader/master/requirements.txt
 
-ECHO %python_url%
-ECHO %requirements_url%
-pause
-exit
-
 IF NOT EXIST .\requirements.txt (
     echo requirements.txt not found!
     curl -o requirements.txt %requirements_url%
