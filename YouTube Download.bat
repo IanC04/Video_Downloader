@@ -27,5 +27,3 @@ IF NOT EXIST .\venv\Scripts\activate.bat (
     echo Activating virtual environment...
     call .\venv\Scripts\activate.bat && python -m YouTube
 )
-
-PAUSE

@@ -37,9 +37,8 @@ class Downloader(tk.Tk):
         self.focus_force()
 
         self._label_text = tk.StringVar()
-        self._label_text.set("YouTube Downloader-Ian Chen.\nLast updated 01/08/2024.")
         self._label = tk.Entry(self, textvariable=self._label_text, justify=tk.CENTER,
-                               state='readonly', font=("Courier", 14), fg="black", width=60)
+                               state='readonly', font=("Courier", 14), fg="black", width=75)
         self._label.grid(row=0, columnspan=2)
         self._input_box = tk.Text(self, height=1, width=40, bg="light yellow", font=("Arial",
                                                                                      14), fg="blue",
@@ -56,6 +55,8 @@ class Downloader(tk.Tk):
         leave = tk.Button(self, text="Exit",
                           command=self.destroy)
         leave.grid(row=3, column=1, sticky=tk.E)
+
+        self.reset()
 
     def get_url(self) -> None:
         self._label_text.set("Enter the URL of the video you want to download.")
@@ -106,16 +107,15 @@ class Downloader(tk.Tk):
 
     def confirm_success(self) -> None:
         self._label_text.set(f"{self._video.title} has been successfully downloaded to "
-                             f"{self._output_file}.\nAgain?")
-        self._back.config(text="No", command=self.destroy)
-        self._next.config(text="Yes", command=self.reset)
+                             f"{self._output_file}.")
+        self._back.config(text="Leave", command=self.destroy)
+        self._next.config(text="Again", command=self.reset, state=tk.NORMAL)
 
     def reset(self) -> None:
-        self._label_text.set("YouTube Downloader-Ian Chen.\nLast updated "
-                             "01/09/2024.")
+        self._label_text.set("YouTube Downloader-Ian Chen. Last updated 01/09/2024.")
         self._input_box.config(state=tk.DISABLED)
         self._back.config(text="Back", state=tk.DISABLED)
-        self._next.config(text="Next", command=self.get_url)
+        self._next.config(text="Next", command=self.get_url, state=tk.NORMAL)
         # self._next.grid(row=2, column=1)
         self._url = None
         self._yt = None
