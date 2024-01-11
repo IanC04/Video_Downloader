@@ -1,4 +1,4 @@
-@echo off
+@echo off & title %~nx0
 cls
 
 SET python_url=https://raw.githubusercontent.com/IanC04/Video_Downloader/master/YouTube.py
@@ -27,3 +27,5 @@ IF NOT EXIST .\venv\Scripts\activate.bat (
     echo Activating virtual environment...
     call .\venv\Scripts\activate.bat && python -m YouTube
 )
+
+EXIT /B
