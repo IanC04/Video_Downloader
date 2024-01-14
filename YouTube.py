@@ -19,7 +19,10 @@ class Downloader(tk.Tk):
     """
     A class that downloads YouTube videos.
     """
-    DEFAULT_SAVE_LOCATION = f"{os.getcwd()}/Downloads"
+    if os.name == "nt":
+        DEFAULT_SAVE_LOCATION = f"{os.getenv('USERPROFILE')}\\Downloads"
+    else:  # PORT: For *Nix systems
+        DEFAULT_SAVE_LOCATION = f"{os.getenv('HOME')}/Downloads"
 
     def __init__(self):
         super().__init__()
@@ -104,22 +107,24 @@ class Downloader(tk.Tk):
         self._back.config(command=self.get_url)
         self._next.config(state=tk.DISABLED)
         try:
-            self._video = self._yt.streams.filter(file_extension='mp4').get_highest_resolution()
+            videos = self._yt.streams.filter(file_extension='mp4')
+            self._video = videos.get_by_resolution('360p')
+            if self._video is None:
+                self._video = videos.get_lowest_resolution()
             self.get_save_directory()
         except pytube.exceptions.PytubeError:
-            self._label_text.set("Invalid URL. Please try again.")
-            self._tip_text.set("Tip: Makes sure entire link is pasted correctly! Only downloads as "
+            self._label_text.set("Please try again with different video.")
+            self._tip_text.set("Tip: Internal error! Only downloads as "
                                "mp4.")
 
     def get_save_directory(self) -> None:
-        if not os.path.isdir(self.DEFAULT_SAVE_LOCATION):
-            os.mkdir(self.DEFAULT_SAVE_LOCATION)
         self._save_directory = self.DEFAULT_SAVE_LOCATION
 
         self._label_text.set("Select a directory to save the video")
         self._tip_text.set("Tip: You can press Ctrl + V to paste the path into the dialog window "
                            "or just close the window for the default directory.")
-        destination = tk.filedialog.askdirectory(mustexist=True,
+        destination = tk.filedialog.askdirectory(initialdir=self.DEFAULT_SAVE_LOCATION,
+                                                 mustexist=True,
                                                  title="Select a directory to save the video")
         if destination == "":
             self._label_text.set(f"Using default directory: {self._save_directory}")
