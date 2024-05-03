@@ -14,7 +14,7 @@ import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 del signal
 
-RELEASE_DATE = f'May 03, 2024'
+LAST_UPDATED = f'May 03, 2024'
 
 
 class Downloader(tk.Tk):
@@ -83,7 +83,8 @@ class Downloader(tk.Tk):
 
         # Tip label
         self._tip_text = tk.StringVar()
-        self._tip = tk.Label(self._frame, textvariable=self._tip_text, justify=tk.LEFT)
+        self._tip = tk.Label(self._frame, textvariable=self._tip_text, justify=tk.LEFT,
+                             wraplength=self.winfo_pixels(ws))
         self._tip.grid(row=4, columnspan=2, sticky=tk.W)
 
         # Exit button
@@ -91,9 +92,9 @@ class Downloader(tk.Tk):
                           command=self.destroy)
         leave.grid(row=5, column=1, sticky=tk.E)
 
-        self.reset()
+        self.reset(True)
 
-    def combo_click(self, event):
+    def combo_click(self, _) -> None:
         if self.QUALITY_MAP[self._qc.get().strip()] > self.QUALITY_MAP['720p']:
             self._tip_text.set('Tip: Can\'t get videos with quality higher then 720p '
                                'resolution due to technical reasons. Will attempt to grab the '
@@ -198,8 +199,9 @@ class Downloader(tk.Tk):
         self._back.config(text='View File', command=lambda: os.startfile(f'{self._output_file}'))
         self._next.config(text='Again!', command=self.reset, state=tk.NORMAL)
 
-    def reset(self) -> None:
-        self._label_text.set(f'YouTube Downloader | Last updated {RELEASE_DATE} by Ian')
+    def reset(self, first_time: bool = False) -> None:
+        self._label_text.set(f'YouTube Downloader' + (f' | Last updated {LAST_UPDATED} by Ian' if
+                                                      first_time else ''))
         self._input_box.config(state=tk.DISABLED)
         self._input_box.delete(0, tk.END)
         self._input_box.unbind('<KeyRelease>')
