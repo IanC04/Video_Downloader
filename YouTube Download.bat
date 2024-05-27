@@ -28,10 +28,12 @@ IF NOT EXIST .\venv\Scripts\activate.bat (
     echo Creating virtual environment...
     python -m venv venv
     echo Installing dependencies...
-    call .\venv\Scripts\activate.bat && pip install -r requirements.txt && python -m YouTube
+    call .\venv\Scripts\activate.bat && pip install -r requirements.txt
 ) ELSE (
     echo Activating virtual environment...
-    call .\venv\Scripts\activate.bat && python -m YouTube
+    call .\venv\Scripts\activate.bat
 )
+
+start pythonw -m YouTube
 
 EXIT /B
