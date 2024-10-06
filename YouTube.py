@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import filedialog, ttk
 import os
 
-LAST_UPDATED = f'August 4, 2024'
+VERSION = f'2.0'
 
 
 class Downloader(tk.Tk):
@@ -189,10 +189,10 @@ class Downloader(tk.Tk):
         self._tip_text.set(f'{self._video.title} has been successfully downloaded to '
                            f'{self._output_file}')
         self._back.config(text='View File', command=lambda: os.startfile(f'{self._output_file}'))
-        self._next.config(text='Again!', command=self.reset, state=tk.NORMAL)
+        self._next.config(text='Again', command=self.reset, state=tk.NORMAL)
 
     def reset(self, first_time: bool = False) -> None:
-        self._label_text.set(f'YouTube Downloader' + (f'\nLast updated {LAST_UPDATED} by Ian' if
+        self._label_text.set(f'YouTube Downloader' + (f' {VERSION}' if
                                                       first_time else ''))
         self._input_box.config(state=tk.DISABLED)
         self._input_box.delete(0, tk.END)
