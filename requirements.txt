@@ -1,1 +1,1 @@
-pytubefix~=7.3rc1
+pytubefix>=8.12.2

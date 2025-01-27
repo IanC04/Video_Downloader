@@ -96,7 +96,7 @@ class Downloader(tk.Tk):
         self._label_text.set("Enter the URL of the video you want to download")
         self._input_box.config(state=tk.NORMAL)
         self._input_box.bind("<KeyRelease>", lambda event: self.check_url())
-        self._tip_text.set('Tip: Right-Click on Thumbnail of a YouTube video then click \"copy '
+        self._tip_text.set('Tip: Right-click on thumbnail of a YouTube video then click \"copy '
                            'link\"')
 
         self._back.config(command=self.reset, state=tk.NORMAL)
@@ -114,6 +114,8 @@ class Downloader(tk.Tk):
                 self._tip_text.set(f'Found video: {self._yt.title}')
             except pytubefix.exceptions.RegexMatchError:
                 self._tip_text.set('Tip: Video not found. Continue typing...')
+            except pytubefix.exceptions.BotDetection:
+                self._tip_text.set('Tip: Bot detection failed. Unable to continue...')
 
     def confirm_url(self) -> None:
         if self._yt is None:
@@ -159,7 +161,7 @@ class Downloader(tk.Tk):
             self._tip_text.set('Tip: Can\'t download age restricted videos without logging in')
         except pytubefix.exceptions.PytubeFixError:
             self._label_text.set('Please try again with different video')
-            self._tip_text.set('Tip: Internal error! Only downloads as mp4')
+            self._tip_text.set('Tip: Internal error. Only downloads as mp4')
 
     def get_save_directory(self) -> None:
         self._save_directory = self.DEFAULT_SAVE_LOCATION
